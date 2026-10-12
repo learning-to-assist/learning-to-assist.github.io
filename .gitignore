@@ -1,0 +1,9 @@
+.DS_Store
+.idea
+
+# Working files that should not be published with the site.
+nerfies.github.io/
+Learning_to_Assist__Designing_Generative_Behavior_Cloned_Policies_for_Implicit_Human_Robot_Collaboration/
+Learning_to_Assist__Designing_Generative_Behavior_Cloned_Policies_for_Implicit_Human_Robot_Collaboration.pdf
+collab-vla-video.mp4
+task-videos*/

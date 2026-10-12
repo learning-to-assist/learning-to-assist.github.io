@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Learning to Assist: Collaborative VLAs for Implicit Human-Robot Collaboration. We identify demonstration action leakage, a failure mode of action-chunking VLAs that causes premature assistance, and mitigate it with inference-time steering.">
+  <meta name="keywords" content="Human-Robot Collaboration, Vision-Language-Action Models, VLA, Imitation Learning, Policy Steering, Action Chunking">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Learning to Assist: Collaborative VLAs for Implicit Human-Robot Collaboration</title>
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Learning to Assist: Collaborative VLAs for Implicit Human-Robot Collaboration">
+  <meta property="og:description" content="Collaborative VLAs for implicit human-robot collaboration, with inference-time steering to prevent premature assistance.">
+  <meta property="og:url" content="https://learning-to-assist.github.io/">
+  <meta property="og:image" content="https://learning-to-assist.github.io/static/images/og_image.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Learning to Assist: Collaborative VLAs for Implicit Human-Robot Collaboration</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Leo Xu<sup>1</sup>,</span>
+            <span class="author-block">Letian Li<sup>1</sup>,</span>
+            <span class="author-block">Alex Cuellar<sup>2</sup>,</span>
+            <span class="author-block">Michael Hagenow<sup>1</sup></span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>University of Wisconsin&ndash;Madison,</span>
+            <span class="author-block"><sup>2</sup>Massachusetts Institute of Technology</span>
+          </div>
+
+          <div class="is-size-5 publication-venue">CoRL 2026</div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/2606.12475"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2606.12475"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <span class="link-block">
+                <a href="#video"
+                   class="button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-video"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video id="teaser" autoplay muted loop playsinline poster="./static/images/teaser_poster.jpg">
+        <source src="./static/videos/teaser.mp4"
+                type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered">
+        A <span class="method-name">Collaborative VLA</span> (fine-tuned &pi;<sub>0.5</sub>) working with a
+        person through a complete, uncut Radio assembly (4&nbsp;min&nbsp;45&nbsp;s in real time). It reads implicit
+        cues, like an outstretched hand, to decide when to fetch and hand over each part.
+      </h2>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Human-robot collaboration (HRC) combines the complementary strengths of humans and robots to
+            improve task efficiency. However, many existing collaborative systems rely on hand-engineered
+            pipelines, limiting their scalability and flexibility for new tasks. In this work, we show that
+            models trained end-to-end with imitation learning, specifically vision-language-action (VLA)
+            models, can support collaborative manipulation, and characterize the key factors affecting their
+            real-world performance.
+          </p>
+          <p>
+            We evaluate two state-of-the-art models and identify a failure mode of action-chunking policies in
+            implicit HRC, where demonstration <i>action leakage</i> (i.e., action chunks crossing latent task
+            transitions) can cause premature assistive behavior. We find that this issue increases with longer
+            execution horizons and occurs in real-world collaborative VLA systems, such as when a robot attempts
+            to hand over a tool before the person is ready. We propose an inference-time steering method to
+            mitigate these erroneous assistive actions while preserving policy performance.
+          </p>
+          <p>
+            Finally, through a 16-participant user study on a long-horizon collaborative assembly task, we show
+            that steering enables a longer execution horizon while mitigating premature assistance, leading to
+            faster collaboration and fewer failures compared to a shorter-horizon policy.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <!-- Paper video. -->
+    <div class="columns is-centered has-text-centered" id="video">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <video controls playsinline preload="metadata" poster="./static/images/video_poster.jpg">
+            <source src="./static/videos/collab_vla_video.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+    <!--/ Paper video. -->
+  </div>
+</section>
+
+
+<!-- Approach. -->
+<section class="hero is-light">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Collaborative VLAs</h2>
+      <div class="paper-figure">
+        <img src="./static/images/teaser.jpg"
+             alt="Left: a teleoperator and a seated collaborator recording collaborative demonstrations. Middle: a VLA model takes camera images, robot state and a task prompt and outputs action chunks, with inference-time 'wait' steering and speed-up interventions. Right: the trained collaborative VLA handing a screwdriver to a person.">
+      </div>
+      <p class="figure-caption">
+        We fine-tune VLAs on collaborative demonstrations and add inference-time interventions to improve timing
+        and mitigate premature robot actions in implicit HRC.
+      </p>
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <div class="content has-text-justified">
+            <p>
+              Many HRC systems use hand-designed pipelines with dedicated modules for intent inference and
+              human-aware motion planning. We ask whether a robot can instead be <i>shown</i> how to collaborate.
+              In <i>implicit</i> collaboration, nobody tells the robot what to do. It has to read subtle cues,
+              like which part the person is working on or whether they have put out their hand, and decide when
+              and how to help. We train action-chunking VLAs on such collaborative demonstrations and find that
+              they can learn these tasks, but they also have a characteristic timing failure.
+            </p>
+            <p><b>Contributions</b></p>
+            <ol>
+              <li>
+                We identify <b>demonstration action leakage</b>, a failure mode of action-chunking policies that
+                can cause premature assistive actions (false starts) in HRC.
+              </li>
+              <li>
+                We propose an <b>inference-time steering approach</b> that uses automatically extracted basin
+                points to reduce false starts without retraining or architectural changes.
+              </li>
+              <li>
+                We evaluate collaborative VLAs on physical tasks, including model and speed comparisons and a
+                <b>16-participant user study</b>. Steering enables longer-horizon execution with less time on task
+                and fewer failures than a conservative short-horizon baseline.
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!--/ Approach. -->
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <!-- Tasks and model comparison. -->
+    <h2 class="title is-3 has-text-centered">Can VLAs Learn Collaborative Tasks?</h2>
+    <div class="paper-figure">
+      <img src="./static/images/tasks.jpg"
+           alt="The tabletop setup with an xArm 6 robot, and the Abstract Assembly, Mini-Chair and Radio tasks with their final assemblies.">
+    </div>
+    <p class="figure-caption">
+      Experimental setup and the three collaborative assembly tasks, each shown in its initial state with the
+      final assembly inset.
+    </p>
+
+    <div class="columns section-subtitle">
+      <div class="column">
+        <div class="task-card">
+          <h3 class="title is-5">Abstract Assembly</h3>
+          <p>
+            <b>Sequential steps.</b> Human and robot each place four blocks into a fixture. The person places
+            red, blue or purple blocks, and the robot must answer with the matching color (either color for
+            purple, to test multimodality).
+          </p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="task-card">
+          <h3 class="title is-5">Mini-Chair</h3>
+          <p>
+            <b>Handovers both ways.</b> The robot must recognize whether the person is attaching the seat or the
+            back, hand over the matching bolts and screwdriver, and take both screwdrivers back at the end.
+          </p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="task-card">
+          <h3 class="title is-5">Radio</h3>
+          <p>
+            <b>Long-horizon.</b> About 5.5-minute demonstrations with two tool handovers, eight object handovers
+            and two sequential manipulations. Used in the user study.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="content has-text-justified">
+      <p>
+        We compare a Diffusion Transformer policy (DiT, based on the Large Behavior Model architecture) trained
+        from scratch against a fine-tuned &pi;<sub>0.5</sub>, each run at the demonstration rate and sped
+        up. Both models predict 16-step action chunks, execute 8 steps before replanning, and are trained on 100
+        demonstrations at 10&nbsp;Hz. To speed the robot up without jerky motion, each new action chunk is
+        truncated to start at the point closest to the last commanded position. Each condition is evaluated
+        over 10 rollouts with a collaborator who did not appear in the training data.
+      </p>
+    </div>
+
+    <h3 class="title is-5 has-text-centered section-subtitle">Abstract Assembly</h3>
+    <div class="paper-figure">
+      <video autoplay muted loop playsinline preload="metadata">
+        <source src="./static/videos/compare_abstract_assembly.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="video-labels">
+      <span>&pi;<sub>0.5</sub></span>
+      <span>DiT</span>
+    </div>
+
+    <h3 class="title is-5 has-text-centered section-subtitle">Mini-Chair</h3>
+    <div class="paper-figure">
+      <video autoplay muted loop playsinline preload="metadata">
+        <source src="./static/videos/compare_mini_chair.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="video-labels">
+      <span>&pi;<sub>0.5</sub></span>
+      <span>DiT</span>
+    </div>
+    <p class="figure-caption">
+      Full, uncut rollouts of each model (execution horizon 8), played side by side at the same speed. A panel
+      dims once its rollout is finished.
+    </p>
+
+    <div class="table-container">
+      <table class="table is-striped is-hoverable is-fullwidth results-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th colspan="5" class="group-start">Abstract Assembly</th>
+            <th colspan="5" class="group-start">Mini-Chair</th>
+          </tr>
+          <tr>
+            <th>Policy</th>
+            <th class="group-start">Progress (%) &uarr;</th>
+            <th>Total time (s) &darr;</th>
+            <th>Robot time (s) &darr;</th>
+            <th>Mistakes &darr;</th>
+            <th>Failures &darr;</th>
+            <th class="group-start">Progress (%) &uarr;</th>
+            <th>Total time (s) &darr;</th>
+            <th>Robot time (s) &darr;</th>
+            <th>Mistakes &darr;</th>
+            <th>Failures &darr;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>DiT</td>
+            <td class="group-start">95 &plusmn; 11</td>
+            <td>120 &plusmn; 34</td>
+            <td>109 &plusmn; 35</td>
+            <td>0.8 &plusmn; 0.6</td>
+            <td>2.1 &plusmn; 3.7</td>
+            <td class="group-start">50 &plusmn; 53</td>
+            <td>318 &plusmn; 56</td>
+            <td>299 &plusmn; 68</td>
+            <td>6.2 &plusmn; 3.8</td>
+            <td>0.9 &plusmn; 1.1</td>
+          </tr>
+          <tr>
+            <td>DiT + Speed</td>
+            <td class="group-start"><b>100 &plusmn; 0</b></td>
+            <td>84 &plusmn; 15</td>
+            <td>73 &plusmn; 14</td>
+            <td>0.7 &plusmn; 0.7</td>
+            <td>0.5 &plusmn; 1.0</td>
+            <td class="group-start">50 &plusmn; 53</td>
+            <td>275 &plusmn; 101</td>
+            <td>264 &plusmn; 107</td>
+            <td>7.6 &plusmn; 5.6</td>
+            <td>0.3 &plusmn; 0.5</td>
+          </tr>
+          <tr>
+            <td>&pi;<sub>0.5</sub></td>
+            <td class="group-start"><b>100 &plusmn; 0</b></td>
+            <td>71 &plusmn; 4</td>
+            <td>58 &plusmn; 3</td>
+            <td><b>0.5 &plusmn; 0.5</b></td>
+            <td><b>0.0 &plusmn; 0.0</b></td>
+            <td class="group-start"><b>100 &plusmn; 0</b></td>
+            <td><b>121 &plusmn; 6</b></td>
+            <td><b>101 &plusmn; 5</b></td>
+            <td><b>0.1 &plusmn; 0.3</b></td>
+            <td><b>0.0 &plusmn; 0.0</b></td>
+          </tr>
+          <tr>
+            <td>&pi;<sub>0.5</sub> + Speed</td>
+            <td class="group-start"><b>100 &plusmn; 0</b></td>
+            <td><b>63 &plusmn; 3</b></td>
+            <td><b>51 &plusmn; 3</b></td>
+            <td>0.8 &plusmn; 1.1</td>
+            <td><b>0.0 &plusmn; 0.0</b></td>
+            <td class="group-start"><b>100 &plusmn; 0</b></td>
+            <td>125 &plusmn; 9</td>
+            <td>102 &plusmn; 9</td>
+            <td><b>0.1 &plusmn; 0.3</b></td>
+            <td><b>0.0 &plusmn; 0.0</b></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="figure-caption">
+      Policy performance over 10 rollouts per condition (mean &plusmn; SD). Bold marks the best policy for each
+      metric.
+    </p>
+
+    <div class="takeaway section-subtitle">
+      <p>
+        <b>&pi;<sub>0.5</sub> is faster and more reliable on both tasks.</b> DiT often missed the person's
+        initial intent in Mini-Chair, struggled with the precise fetching of tools and bolts, and learned only one
+        of the two assembly orders despite balanced training data. This suggests that general manipulation
+        pretraining also helps collaboration. <b>Speed-up helps when the person is waiting on the robot:</b> it
+        cut time on Abstract Assembly with similar mistake and failure rates. In Mini-Chair, the robot usually
+        fetches the next item while the person is still working, so there is less to gain.
+      </p>
+    </div>
+    <!--/ Tasks and model comparison. -->
+
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <!-- Action leakage. -->
+    <h2 class="title is-3 has-text-centered">Action Leakage Causes Premature Assistance</h2>
+    <div class="content has-text-justified">
+      <p>
+        While reviewing rollouts, we noticed that the robot sometimes handed over an object <i>before</i> the
+        person extended their hand. The cause is action chunking. In a collaborative demonstration, a chunk whose
+        observation still shows the robot waiting can include the motion that follows once the person signals
+        readiness. We call this <b>demonstration action leakage</b>: a training chunk that spans a transition in
+        the human's latent intent.
+      </p>
+    </div>
+    <div class="paper-figure">
+      <img src="./static/images/action_leakage.jpg"
+           alt="Six frames from the wrist camera: four nearly identical frames while the robot waits, then the person extends a hand and the robot moves for the handover. Below, a chunk that starts during waiting and ends during waiting is marked correct, while a chunk that starts during waiting but extends into the handover motion is marked as problematic.">
+    </div>
+    <p class="figure-caption">
+      Two action chunks with nearly identical "waiting" observations. One contains only idle actions; the other
+      leaks into the upcoming handover motion.
+    </p>
+
+    <div class="columns is-vcentered section-subtitle">
+      <div class="column is-7">
+        <div class="paper-figure">
+          <video autoplay muted loop playsinline preload="metadata">
+            <source src="./static/videos/false_start.mp4" type="video/mp4">
+          </video>
+        </div>
+        <p class="figure-caption">
+          A false start at real-time speed. The collaborator's hands stay on the table, but the robot begins the
+          handover anyway.
+        </p>
+      </div>
+      <div class="column">
+        <div class="content">
+          <p>
+            Because waiting observations look almost identical, the policy can sample a leaky chunk at any point
+            while it waits. This produces a <b>false start</b> that drifts into out-of-distribution states and
+            ends in a <b>false commitment</b>, such as a premature handover.
+          </p>
+          <p>
+            The problem grows with the execution horizon. Shortening the horizon reduces false starts, but it
+            cannot eliminate them, because any chunk can cross the boundary. It also hurts temporal consistency.
+            Adding more waiting data helps but does not resolve the issue.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-vcentered">
+      <div class="column is-5">
+        <div class="paper-figure is-narrow">
+          <img src="./static/images/action_leakage_chunks.png"
+               alt="Plot of 100 predicted chunks sorted by the prediction step at which future task motion begins. Every chunk transitions to future task motion before step 16, many before step 8.">
+        </div>
+      </div>
+      <div class="column">
+        <div class="content">
+          <p>
+            <b>Direct evidence.</b> At a representative Mini-Chair handover, all 100 action chunks sampled from
+            &pi;<sub>0.5</sub> (prediction horizon 16) contain a transition from waiting into future task motion.
+            Executing only the first 4 steps (dashed line) stays clear of the leaked motion in this sample,
+            but longer execution horizons execute more and more of it. When we removed leaky
+            chunks from the training set, only 1 of 100 sampled chunks leaked, and the robot stayed in place
+            until the collaborator signaled readiness.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Action leakage. -->
+
+    <!-- Steering. -->
+    <h2 class="title is-3 has-text-centered section-subtitle">Inference-Time Steering toward Waiting</h2>
+    <div class="columns is-vcentered">
+      <div class="column is-5">
+        <div class="paper-figure is-narrow">
+          <img src="./static/images/basin_steering.jpg"
+               alt="Robot gripper holding a screwdriver inside a shaded sphere marking a basin point. Several sampled action chunks fan out from the gripper; chunks ending closer to the basin receive higher steering reward, and arrows show the pull toward the basin center.">
+        </div>
+        <p class="figure-caption">
+          Chunks that end closer to the basin get higher reward, and the basin pull further encourages waiting.
+        </p>
+      </div>
+      <div class="column">
+        <div class="content">
+          <p>
+            We bias the policy toward waiting at inference time, with no retraining or architecture changes.
+            Directly rewarding small velocities breaks slow manipulations, so we anchor steering on
+            <b>basin points</b>: waiting positions found by MeanShift clustering of the training data.
+          </p>
+          <p>
+            <b>FK steering.</b> We adapt Feynman-Kac steering to sample action chunks from a tilted distribution
+            &pi;<sub>tilt</sub>(<b>a</b>&nbsp;|&nbsp;c)&nbsp;&prop;&nbsp;&pi;<sub>&theta;</sub>(<b>a</b>&nbsp;|&nbsp;c)&nbsp;exp(&lambda;&nbsp;r(<b>a</b>)).
+            While the robot is inside a basin, a set of particles is denoised in parallel and resampled toward
+            chunks that end near the basin without drifting away from it. The highest-reward chunk is executed. With 16 particles, &pi;<sub>0.5</sub>
+            inference takes 88.8&nbsp;ms, compared with 67.2&nbsp;ms without steering.
+          </p>
+          <p>
+            <b>Basin pull.</b> Noise can still let the robot creep out of a basin, so we also interpolate the
+            commanded end-effector position toward the active basin, weighted by how conservative the best
+            particle is.
+          </p>
+          <p>
+            Both mechanisms turn off outside the basin radius, where the policy samples from its original
+            distribution. This keeps it responsive to readiness cues.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="paper-figure section-subtitle">
+      <video autoplay muted loop playsinline preload="metadata">
+        <source src="./static/videos/steering_comparison.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="video-labels">
+      <span>Without steering</span>
+      <span>With steering</span>
+    </div>
+    <p class="figure-caption">
+      Waiting to hand over with an idle collaborator. Without steering, the robot repeatedly drifts toward the
+      person. With steering, it holds its waiting position, even though the clip covers a much longer span.
+    </p>
+
+    <div class="columns is-vcentered section-subtitle">
+      <div class="column is-5">
+        <div class="paper-figure is-narrow">
+          <img src="./static/images/false_commitments.png"
+               alt="Drift and false commitments versus execution horizon 4, 8, 12 and 16 for baseline, pull, FK steer, and FK steer plus pull. Both increase with longer horizons for the baseline; FK steer plus pull stays low across horizons.">
+        </div>
+      </div>
+      <div class="column">
+        <div class="content">
+          <p>
+            <b>Waiting experiments.</b> We ran the sped-up &pi;<sub>0.5</sub> for five minutes in a pre-handover
+            state with an idle collaborator (8 trials per condition). Longer execution horizons produced more
+            false commitments and drift. FK steering combined with basin pull reduced both at every horizon.
+          </p>
+          <p>
+            On the Radio task at an execution horizon of 12, steering cut premature commitments from
+            7&nbsp;(&plusmn;&nbsp;4) to 0 and waiting drift from 0.99&nbsp;m to 0.06&nbsp;m over five minutes.
+            The cost is a slightly slower reaction to handover cues: 0.40&nbsp;s on average over 50 handovers,
+            compared with 0.29&nbsp;s without steering.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Steering. -->
+
+  </div>
+</section>
+
+
+<!-- User study. -->
+<section class="hero is-light">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">User Study</h2>
+      <div class="content has-text-justified">
+        <p>
+          Sixteen participants completed the Radio assembly with two configurations of the sped-up, fine-tuned
+          &pi;<sub>0.5</sub>, in counterbalanced order. The two conditions are the two ways of avoiding false
+          starts described above:
+        </p>
+        <ul>
+          <li>
+            <b>Short horizon (4):</b> executes 4 steps per chunk. It is more reactive and empirically avoids
+            false starts, but it is less temporally cohesive.
+          </li>
+          <li>
+            <b>Long horizon + steering (12+Steer):</b> executes 12 steps per chunk with our steering. It is
+            smoother and more cohesive, and it would produce false starts without steering.
+          </li>
+        </ul>
+      </div>
+
+      <div class="paper-figure">
+        <video autoplay muted loop playsinline preload="metadata">
+          <source src="./static/videos/user_study_comparison.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="video-labels">
+        <span>Short horizon (4)</span>
+        <span>Long horizon + steering (12+Steer)</span>
+      </div>
+      <p class="figure-caption">Radio assembly with each condition.</p>
+
+      <div class="paper-figure section-subtitle">
+        <img src="./static/images/user_study_results.png"
+             alt="Bar charts comparing the two conditions. Time: 350.1 s for 4 versus 302.0 s for 12+Steer (p < .001). Mistakes: 0.6 versus 2.8 (p < .01). Failures: 1.1 versus 0.5 (p < .05). SUS, NASA TLX and fluency show no significant differences.">
+      </div>
+      <p class="figure-caption">
+        User study results (n&nbsp;=&nbsp;16, paired t-tests). Light bars: short horizon (4). Dark bars:
+        12+Steer.
+      </p>
+
+      <div class="content has-text-justified section-subtitle">
+        <ul>
+          <li>
+            <b>Faster collaboration with fewer resets.</b> 12+Steer reduced time on task (302&nbsp;s vs.
+            350&nbsp;s, p&nbsp;&lt;&nbsp;.001) and failures that required a reset (0.5 vs. 1.1,
+            p&nbsp;&lt;&nbsp;.05).
+          </li>
+          <li>
+            <b>Preferred by most participants.</b> 11 of 16 preferred 12+Steer and called it noticeably smoother
+            and faster. The other five felt the short horizon was more accurate.
+          </li>
+          <li>
+            <b>Trade-offs.</b> Because it is less reactive, 12+Steer made more recoverable mistakes such as
+            re-grasps (2.8 vs. 0.6, p&nbsp;&lt;&nbsp;.01) and more handover collisions (0.5 vs. 0.06), although
+            no participant mentioned these as a source of discomfort. The subjective questionnaires (SUS, NASA-TLX
+            and fluency) showed no significant differences.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+<!--/ User study. -->
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@inproceedings{xu2026learning,
+  title         = {Learning to Assist: Collaborative {VLAs} for Implicit Human-Robot Collaboration},
+  author        = {Xu, Leo and Li, Letian and Cuellar, Alex and Hagenow, Michael},
+  booktitle     = {Conference on Robot Learning (CoRL)},
+  year          = {2026},
+  eprint        = {2606.12475},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.RO}
+}</code></pre>
+
+    <h2 class="title">Acknowledgments</h2>
+    <p>
+      We are grateful to Tutor Intelligence for donating the robot arm featured in this project. We thank
+      Kerimcan Turkucu for his help collecting interaction data for each of our tasks and Johnny Hong for helping
+      run the demonstration-budget experiments in the appendix. We also thank William Chen for helpful
+      discussions.
+    </p>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link"
+         href="https://arxiv.org/pdf/2606.12475">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            The page template is borrowed from <a href="https://nerfies.github.io">Nerfies</a>
+            (<a href="https://github.com/nerfies/nerfies.github.io">source code</a>).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

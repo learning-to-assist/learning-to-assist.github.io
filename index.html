@@ -96,14 +96,12 @@
                 type="video/mp4">
       </video>
       <h2 class="subtitle has-text-centered">
-        A <span class="method-name">Collaborative VLA</span> (fine-tuned &pi;<sub>0.5</sub>) working with a
-        person through a complete, uncut Radio assembly (4&nbsp;min&nbsp;45&nbsp;s in real time). It reads implicit
-        cues, like an outstretched hand, to decide when to fetch and hand over each part.
+        A <span class="method-name">Collaborative VLA</span> working with a
+        person through a complete radio assembly (4 min 45 s in real time). It reads implicit cues to decide when to fetch and hand over each part.
       </h2>
     </div>
   </div>
 </section>
-
 
 <section class="section">
   <div class="container is-max-desktop">
@@ -174,20 +172,19 @@
             <p>
               Many HRC systems use hand-designed pipelines with dedicated modules for intent inference and
               human-aware motion planning. We ask whether a robot can instead be <i>shown</i> how to collaborate.
-              In <i>implicit</i> collaboration, nobody tells the robot what to do. It has to read subtle cues,
-              like which part the person is working on or whether they have put out their hand, and decide when
-              and how to help. We train action-chunking VLAs on such collaborative demonstrations and find that
-              they can learn these tasks, but they also have a characteristic timing failure.
+              In <i>implicit</i> collaboration, the robot has to read subtle cues, like which part the person is working on 
+              or whether they have put out their hand, and decide when and how to help. We train action-chunking VLAs on such 
+              collaborative demonstrations and find that they can learn these tasks, but <b>they also have a characteristic timing failure.</b>
             </p>
             <p><b>Contributions</b></p>
             <ol>
               <li>
                 We identify <b>demonstration action leakage</b>, a failure mode of action-chunking policies that
-                can cause premature assistive actions (false starts) in HRC.
+                can cause premature assistive actions (false commitments) in HRC.
               </li>
               <li>
                 We propose an <b>inference-time steering approach</b> that uses automatically extracted basin
-                points to reduce false starts without retraining or architectural changes.
+                points to reduce false commitments without retraining or architectural changes.
               </li>
               <li>
                 We evaluate collaborative VLAs on physical tasks, including model and speed comparisons and a
@@ -251,7 +248,7 @@
 
     <div class="content has-text-justified">
       <p>
-        We compare a Diffusion Transformer policy (DiT, based on the Large Behavior Model architecture) trained
+        We compare a Diffusion Transformer policy (DiT) trained
         from scratch against a fine-tuned &pi;<sub>0.5</sub>, each run at the demonstration rate and with a
         speed-up that consumes actions 1.5&times; faster. Both models predict 16-step action chunks, execute 8
         steps before replanning, and are trained on 100 demonstrations at 10&nbsp;Hz. To speed the robot up
@@ -372,12 +369,11 @@
 
     <div class="takeaway section-subtitle">
       <p>
-        <b>&pi;<sub>0.5</sub> is faster and more reliable on both tasks.</b> DiT often missed the person's
-        initial intent in Mini-Chair, struggled with the precise fetching of tools and bolts, and learned only one
-        of the two assembly orders despite balanced training data. This suggests that general manipulation
-        pretraining also helps collaboration. <b>Speed-up helps when the person is waiting on the robot:</b> it
-        cut time on Abstract Assembly with similar mistake and failure rates. In Mini-Chair, the robot usually
-        fetches the next item while the person is still working, so there is less to gain.
+        <b>&pi;<sub>0.5</sub> outperforms DiT on both tasks.</b> DiT often misread the person's initial intent in
+        Mini-Chair, fumbled precise fetches of tools and bolts, and learned only one of the two assembly orders,
+        suggesting that manipulation pretraining also helps collaboration. <b>Speed-up helps most when the person
+        is waiting on the robot:</b> it shortened Abstract Assembly but gained little on Mini-Chair, where the
+        robot usually fetches the next item while the person is still working.
       </p>
     </div>
     <!--/ Tasks and model comparison. -->
@@ -394,7 +390,7 @@
     <div class="content has-text-justified">
       <p>
         While reviewing rollouts, we noticed that the robot sometimes handed over an object <i>before</i> the
-        person extended their hand. The cause is action chunking. In a collaborative demonstration, a chunk whose
+        person extended their hand. <b>The cause is action chunking.</b> In a collaborative demonstration, a chunk whose
         observation still shows the robot waiting can include the motion that follows once the person signals
         readiness. We call this <b>demonstration action leakage</b>: a training chunk that spans a transition in
         the human's latent intent.
@@ -409,31 +405,26 @@
       leaks into the upcoming handover motion.
     </p>
 
-    <div class="columns is-vcentered section-subtitle">
-      <div class="column is-7">
-        <div class="paper-figure">
-          <video autoplay muted loop playsinline preload="metadata">
-            <source src="./static/videos/false_start.mp4" type="video/mp4">
-          </video>
-        </div>
-        <p class="figure-caption">
-          A false start at real-time speed. The collaborator's hands stay on the table, but the robot begins the
-          handover anyway.
-        </p>
+    <div class="figure-row section-subtitle">
+      <div class="paper-figure figure-row-media">
+        <video autoplay muted loop playsinline preload="metadata">
+          <source src="./static/videos/false_start.mp4" type="video/mp4">
+        </video>
       </div>
-      <div class="column">
-        <div class="content">
-          <p>
-            Because waiting observations look almost identical, the policy can sample a leaky chunk at any point
-            while it waits. This produces a <b>false start</b> that drifts into out-of-distribution states and
-            ends in a <b>false commitment</b>, such as a premature handover.
-          </p>
-          <p>
-            The problem grows with the execution horizon. Shortening the horizon reduces false starts, but it
-            cannot eliminate them, because any chunk can cross the boundary. It also hurts temporal consistency.
-            Adding more waiting data helps but does not resolve the issue.
-          </p>
-        </div>
+      <p class="figure-caption figure-row-caption">
+        A false start at real-time speed. The collaborator's hands stay on the table, but the robot begins the
+        handover anyway.
+      </p>
+      <div class="content figure-row-text">
+        <p>
+          Because waiting observations look almost identical, the policy can sample a leaky chunk at any point
+          while it waits. This produces a <b>false start</b> that drifts into out-of-distribution states and
+          ends in a <b>false commitment</b>, such as a premature handover.
+        </p>
+        <p>
+          The problem grows with the execution horizon. Shortening the horizon reduces false starts, but it
+          cannot eliminate them, because any chunk can cross the boundary.
+        </p>
       </div>
     </div>
 
@@ -448,10 +439,12 @@
         <div class="content">
           <p>
             <b>Direct evidence.</b> At a representative Mini-Chair handover, all 100 action chunks sampled from
-            &pi;<sub>0.5</sub> (prediction horizon 16) contain a transition from waiting into future task motion.
+            &pi;<sub>0.5</sub> contain a transition from waiting into future task motion.
             Executing only the first 4 steps (dashed line) stays clear of the leaked motion in this sample,
-            but longer execution horizons execute more and more of it. When we removed leaky
-            chunks from the training set, only 1 of 100 sampled chunks leaked, and the robot stayed in place
+            but longer execution horizons execute more and more of it.
+          </p>
+          <p>
+            When we manually removed leaky chunks from the training set, only 1 of 100 sampled chunks leaked, and the robot stayed in place
             until the collaborator signaled readiness.
           </p>
         </div>
@@ -461,40 +454,35 @@
 
     <!-- Steering. -->
     <h2 class="title is-3 has-text-centered section-subtitle">Inference-Time Steering toward Waiting</h2>
-    <div class="columns is-vcentered">
-      <div class="column is-5">
-        <div class="paper-figure is-narrow">
-          <img src="./static/images/basin_steering.jpg"
-               alt="Robot gripper holding a screwdriver inside a shaded sphere marking a basin point. Several sampled action chunks fan out from the gripper; chunks ending closer to the basin receive higher steering reward, and arrows show the pull toward the basin center.">
-        </div>
-        <p class="figure-caption">
-          Chunks that end closer to the basin get higher reward, and the basin pull further encourages waiting.
-        </p>
+    <div class="figure-row has-narrow-media">
+      <div class="paper-figure is-narrow figure-row-media">
+        <img src="./static/images/basin_steering.jpg"
+             alt="Robot gripper holding a screwdriver inside a shaded sphere marking a basin point. Several sampled action chunks fan out from the gripper; chunks ending closer to the basin receive higher steering reward, and arrows show the pull toward the basin center.">
       </div>
-      <div class="column">
-        <div class="content">
-          <p>
-            We bias the policy toward waiting at inference time, with no retraining or architecture changes.
-            Directly rewarding small velocities breaks slow manipulations, so we anchor steering on
-            <b>basin points</b>: waiting positions found by MeanShift clustering of the training data.
-          </p>
-          <p>
-            <b>FK steering.</b> We adapt Feynman-Kac steering to sample action chunks from a tilted distribution
-            &pi;<sub>tilt</sub>(<b>a</b>&nbsp;|&nbsp;c)&nbsp;&prop;&nbsp;&pi;<sub>&theta;</sub>(<b>a</b>&nbsp;|&nbsp;c)&nbsp;exp(&lambda;&nbsp;r(<b>a</b>)).
-            While the robot is inside a basin, a set of particles is denoised in parallel and resampled toward
-            chunks that end near the basin without drifting away from it. The highest-reward chunk is executed. With 16 particles, &pi;<sub>0.5</sub>
-            inference takes 88.8&nbsp;ms, compared with 67.2&nbsp;ms without steering.
-          </p>
-          <p>
-            <b>Basin pull.</b> Noise can still let the robot creep out of a basin, so we also interpolate the
-            commanded end-effector position toward the active basin, weighted by how conservative the best
-            particle is.
-          </p>
-          <p>
-            Both mechanisms turn off outside the basin radius, where the policy samples from its original
-            distribution. This keeps it responsive to readiness cues.
-          </p>
-        </div>
+      <p class="figure-caption figure-row-caption">
+        Chunks that end closer to the basin get higher reward, and the basin pull further encourages waiting.
+      </p>
+      <div class="content figure-row-text">
+        <p>
+          We bias the policy toward waiting at inference time, with no retraining or architecture changes.
+          We anchor steering on <b>basin points</b>, which are waiting positions found by MeanShift clustering of the training data.
+        </p>
+        <p>
+          <b>FK steering.</b> We adapt Feynman-Kac steering to sample action chunks from a tilted distribution
+          &pi;<sub>tilt</sub>(<b>a</b>&nbsp;|&nbsp;c)&nbsp;&prop;&nbsp;&pi;<sub>&theta;</sub>(<b>a</b>&nbsp;|&nbsp;c)&nbsp;exp(&lambda;&nbsp;r(<b>a</b>)).
+          While the robot is inside a basin, a set of particles is denoised in parallel and resampled toward
+          chunks that end near the basin without drifting away from it. With 16 particles, &pi;<sub>0.5</sub>
+          inference takes 88.8&nbsp;ms, compared with 67.2&nbsp;ms without steering.
+        </p>
+        <p>
+          <b>Basin pull.</b> Noise can still let the robot creep out of a basin, so we also interpolate the
+          commanded end-effector position toward the active basin, weighted by how conservative the best
+          particle is.
+        </p>
+        <p>
+          Both mechanisms turn off outside the basin radius, where the policy samples from its original
+          distribution.
+        </p>
       </div>
     </div>
 
@@ -522,8 +510,8 @@
       <div class="column">
         <div class="content">
           <p>
-            <b>Waiting experiments.</b> We ran the sped-up &pi;<sub>0.5</sub> for five minutes in a pre-handover
-            state with an idle collaborator (8 trials per condition). Longer execution horizons produced more
+            <b>Waiting experiments.</b> We ran the sped-up &pi;<sub>0.5</sub> for five minutes at a handover 
+            boundary with an idle collaborator (8 trials per condition). Longer execution horizons produced more
             false commitments and drift. FK steering combined with basin pull reduced both at every horizon.
           </p>
           <p>

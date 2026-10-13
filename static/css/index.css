@@ -86,6 +86,45 @@ body {
   text-align: center;
 }
 
+/* Figure beside text, with the text centered on the figure rather than figure + caption. */
+.figure-row {
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  grid-template-areas:
+    "media text"
+    "caption .";
+  column-gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.figure-row.has-narrow-media {
+  grid-template-columns: 5fr 7fr;
+}
+
+.figure-row-media {
+  grid-area: media;
+}
+
+.figure-row-caption {
+  grid-area: caption;
+  align-self: start;
+}
+
+.figure-row-text {
+  grid-area: text;
+}
+
+@media screen and (max-width: 1023px) {
+  .figure-row {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "media"
+      "caption"
+      "text";
+  }
+}
+
 sub, sup {
   line-height: 0;
 }
@@ -116,8 +155,7 @@ sub, sup {
 .takeaway {
   padding: 1rem 1.25rem;
   background: #f5f5f5;
-  border-left: 4px solid #485fc7;
-  border-radius: 4px;
+  border-radius: 10px;
 }
 
 .section-subtitle {

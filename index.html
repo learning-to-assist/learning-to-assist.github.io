@@ -252,10 +252,11 @@
     <div class="content has-text-justified">
       <p>
         We compare a Diffusion Transformer policy (DiT, based on the Large Behavior Model architecture) trained
-        from scratch against a fine-tuned &pi;<sub>0.5</sub>, each run at the demonstration rate and sped
-        up. Both models predict 16-step action chunks, execute 8 steps before replanning, and are trained on 100
-        demonstrations at 10&nbsp;Hz. To speed the robot up without jerky motion, each new action chunk is
-        truncated to start at the point closest to the last commanded position. Each condition is evaluated
+        from scratch against a fine-tuned &pi;<sub>0.5</sub>, each run at the demonstration rate and with a
+        speed-up that consumes actions 1.5&times; faster. Both models predict 16-step action chunks, execute 8
+        steps before replanning, and are trained on 100 demonstrations at 10&nbsp;Hz. To speed the robot up
+        without jerky motion, each new action chunk is truncated to start at the point closest to the last
+        commanded position. Each condition is evaluated
         over 10 rollouts with a collaborator who did not appear in the training data.
       </p>
     </div>

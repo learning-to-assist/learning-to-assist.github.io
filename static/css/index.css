@@ -86,20 +86,16 @@ body {
   text-align: center;
 }
 
-/* Figure beside text, with the text centered on the figure rather than figure + caption. */
+/* Figure beside text, with the text centered on the figure rather than figure + caption.
+   Stacked below 1024px, where the container is fluid and the text would outgrow the figure. */
 .figure-row {
   display: grid;
-  grid-template-columns: 7fr 5fr;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
-    "media text"
-    "caption .";
-  column-gap: 1.5rem;
-  align-items: center;
+    "media"
+    "caption"
+    "text";
   margin-bottom: 1.5rem;
-}
-
-.figure-row.has-narrow-media {
-  grid-template-columns: 5fr 7fr;
 }
 
 .figure-row-media {
@@ -115,18 +111,27 @@ body {
   grid-area: text;
 }
 
-@media screen and (max-width: 1023px) {
+@media screen and (min-width: 1024px) {
   .figure-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     grid-template-areas:
-      "media"
-      "caption"
-      "text";
+      "media text"
+      "caption .";
+    column-gap: 1.5rem;
+    align-items: center;
+  }
+
+  .figure-row.has-narrow-media {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   }
 }
 
 sub, sup {
   line-height: 0;
+}
+
+.formula {
+  white-space: nowrap;
 }
 
 .video-labels {
